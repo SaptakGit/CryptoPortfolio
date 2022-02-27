@@ -1,5 +1,7 @@
 from tkinter import *
 
+import matplotlib.pyplot as plt
+
 import requests  # for url request --> pip install requests
 import json  # for handling json data --> pip install json
 
@@ -80,8 +82,8 @@ def lookup():
         },
         {
             "symbol": "NEWO",
-            "amount_owned": 100000,
-            "price_paid_per": .01
+            "amount_owned": 1000000,
+            "price_paid_per": 0.00
         }
     ]
 
@@ -89,6 +91,8 @@ def lookup():
     row_count = 1
     total_current_values = 0
     profit_loss = 0
+    pie = []
+    pie_sizes = []
     for rate in api_response:
         # print(rate)
         for coin in my_portfolio:
@@ -102,6 +106,9 @@ def lookup():
                 profile_profit_loss += profit_loss
                 profit_loss_per_coin = float(rate['price']) - float(coin['price_paid_per'])
                 total_current_values += current_value
+
+                pie.append(rate['name'])
+                pie_sizes.append(coin['amount_owned'])
 
                 # print(rate['name'])
                 # print("Current Price = ${0:.2f}".format(float(rate['price'])))
@@ -154,6 +161,25 @@ def lookup():
         profile_profits.grid(row=row_count, column=0, sticky=W, padx=10, pady=10)
 
         root.title("Crypto Portfolio App - Portfolio Value : ${0:.2f}".format(float(total_current_values)))
+
+        api = ""
+        update_button = Button(root, text="Update Price", command=lookup)
+        update_button.grid(row=row_count, column=9)
+
+        pie_chart_button = Button(root, text="Show Pie Chart", command=lambda: pie_chart(pie, pie_sizes))
+        pie_chart_button.grid(row=row_count, column=8)
+
+
+def pie_chart(labels, sizes):
+    # print("pie here")
+    # labels = pie
+    # sizes = pie
+    colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral', 'red']
+    patches, texts = plt.pie(sizes, colors=colors, shadow=True, startangle=90)
+    plt.legend(patches, labels, loc="best")
+    plt.axis("equal")
+    plt.tight_layout()
+    plt.show()
 
 
 lookup()
